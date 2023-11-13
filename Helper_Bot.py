@@ -10,13 +10,13 @@ def input_error(func):
         try:
            return func(*args)
         except IndexError:
-            print("Enter name and phone number.")
+            print("Вкажіть ім'я та номер телефону")
             return
         except ValueError:
             print('ValueError')
             return
         except KeyError:
-            print('This subscriber is not available.')
+            print('Данний абонент відсутній')
             return
     return wrapper
 
@@ -39,11 +39,12 @@ def add_name_phone_decorator(func):
         050-40 40-400
         Спробуйте ще раз...
         """
+               
         args[0][0] = args[0][0].capitalize()
         if args[0][0].isalpha():
             pass
         else:
-            print("The name can only consist of letters\nTry again.")
+            print("Ім'я може складатись тільки з літер\nСпробуйте ще раз")
             return
         phone = ' '.join(args[0][1:])
         correct_phone = str(phone)
@@ -53,7 +54,6 @@ def add_name_phone_decorator(func):
         correct_phone = correct_phone.replace(' ','')
         correct_phone = correct_phone.replace('*','')
         correct_phone = correct_phone.replace('#','')
-        correct_phone = correct_phone.replace('_','')
         if len(correct_phone) == 10:
             correct_phone = '+38' + correct_phone
         if len(correct_phone) == 12:
@@ -65,7 +65,7 @@ def add_name_phone_decorator(func):
         if correct_phone.startswith('+') and correct_phone[1:].isdigit():
             args[0][1] = correct_phone
         else:
-            print(f'The number {correct_phone} contains extra characters/letters')
+            print(f'Номер {correct_phone} містить лишні символи/літери')
             print(help_number_message)
             return
         return func(*args)
@@ -75,6 +75,7 @@ is_active = True
 def hello_human():
     print('How can I help you?')
 
+# Добавляє новий контакт в словник
 @input_error
 @add_name_phone_decorator
 def add_name_phone(*args):
@@ -82,6 +83,7 @@ def add_name_phone(*args):
     print(f'Contact {new_contact} added: ')
     CONTACTS.append(new_contact)
 
+#Змінює Номер телефону в словнику
 @input_error
 @add_name_phone_decorator
 def new_phone_number(*args):
@@ -89,6 +91,8 @@ def new_phone_number(*args):
     for item in CONTACTS:
         if item[args[0][0]]:
             item[args[0][0]] = args[0][1]
+
+
 @input_error
 def return_phone_number(*args):
     name = args[0][0].capitalize()
@@ -98,12 +102,12 @@ def return_phone_number(*args):
             print(item[name])
 
 def show_list_phone_number():
-    print('List of your phone numbers: ')
+    print('List of phone numbers: ')
     for item in CONTACTS:
         print(item)
 
 def stop_work():
-    print('Good Bye!')
+    print('Good Bye')
     global is_active
     is_active = False
 
@@ -112,6 +116,8 @@ def help_help(*args):
     print(len(args[0]))
     if len(args[0]) == 0:
         print(len(args[0]))
+        for key, value in HELP.items():
+            print(f'Key: {key} ====> value:{value}')
     elif len(args[0]) == 1:
         command = args[0][0]
         if command in HELP:
@@ -122,16 +128,16 @@ def help_help(*args):
             print(HELP[command])
     
         
-HELP = {"add": "This comand help you to add a new name and phone to your Phone list.",
-        "change": "This comand help you to change a new phone number of exist abonent in your Phone list.",
-        "phone": "This comand show you phone number of exist abonent from your Phone list.",
-        "show all": "This comand show you all Names and Phone Numbers of exist abonent from your Phone list.",
-        "good bye": "This comand help you to exit from this Bot.",
-        "close": "This comand help you to exit from this Bot.",
-        "exit": "This comand help you to exit from this Bot.",
-}
+HELP = {"add": "This comand help you to add a new name and phone to your Phone list",
+        "change": "This comand help you to change a new phone number of exist abonent in your Phone list",
+        "phone": "This comand show you phone number of exist abonent from your Phone list",
+        "show all": "This comand show you all Names and Phone Numbers of exist abonent from your Phone list",
+        "good bye": "This comand help you to exit from this Bot",
+        "close": "This comand help you to exit from this Bot",
+        "exit": "This comand help you to exit from this Bot",}
 
-# Функції
+
+# Словник Команд
 OPERATIONS = {
     "help": help_help,
     "hello": hello_human,
@@ -144,15 +150,16 @@ OPERATIONS = {
     "exit": stop_work,
 }
 
-CONTACTS = []
 
+CONTACTS = []
 #Handler
 @Handler_command_decorator
 def get_handler(command):
     return OPERATIONS[command]
+
 def start_script(): # Вічний цикл
     while is_active:
-        request = input('Enter the comand, please:  ').lower()
+        request = input('Enter Comand:  ').lower()
         command_parts = request.split()
         if command_parts[0] == 'hello':
             command = command_parts[0]
@@ -163,7 +170,6 @@ def start_script(): # Вічний цикл
             arguments = command_parts[1:]
             handler = get_handler(command)
             handler(arguments)
-        
         if command_parts[0] in ['exit','close']:
             command = command_parts[0]
             handler = get_handler(command)
